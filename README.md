@@ -23,7 +23,7 @@ Projeto acadêmico de análise e otimização de consultas no PostgreSQL usando 
 │   ├── workload_consultas.sql   # Consultas usadas na análise
 │   └── 02_criacao_indices.sql   # Índices propostos para o workload
 ├── docs/
-│   └── AP1_Relatorio_Baseline.md
+│   └── AP1_Relatorio.md
 └── AdventureWorks-for-Postgres-master/ # SQL de instalação e arquivos CSV da base
 ```
 
@@ -67,7 +67,7 @@ Repita as medições do workload e compare os planos e tempos antes e depois dos
 
 ## Relatório
 
-O relatório com a caracterização do ambiente, a análise dos planos e as limitações observadas está em [`docs/AP1_Relatorio_Baseline.md`](docs/AP1_Relatorio_Baseline.md).
+O relatório com a caracterização do ambiente, a análise dos planos e as limitações observadas está em [`docs/AP1_Relatorio.md`](docs/AP1_Relatorio.md).
 
 ## Encerrar o ambiente
 
