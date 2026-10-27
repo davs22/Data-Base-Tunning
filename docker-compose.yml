@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres-tuning:
+    image: postgres:15
+    container_name: db_tuning_unisales
+    environment:
+      POSTGRES_USER: srdiirr
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: adventureworks
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_tuning:/var/lib/postgresql/data
+      - ./AdventureWorks-for-Postgres-master:/var/lib/postgresql/AdventureWorks
+    restart: unless-stopped
+
+volumes:
+  pgdata_tuning:
