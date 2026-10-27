@@ -2,6 +2,7 @@
 **Aluno:** Matheus Diirr Aguiar Veiga de Souza  
 **Disciplina:** Data Base Tunning  
 
+## Parte 01 e Linha de Base
 ## 1. Caracterização do Ambiente
 - **SGBD:** PostgreSQL 15 (executado via contêiner Docker isolado).
 - **Base de Dados Objeto de Estudo:** AdventureWorks (Cenário OLTP).
@@ -21,7 +22,7 @@ O comportamento do otimizador de consultas (sem a aplicação de índices adicio
 - **Consulta 2:** Custo total estimado de 0.11. Tempo de execução de 0.197 ms. Estruturas utilizadas: Agrupamento em hash (`HashAggregate`) e função de agregação de janela (`WindowAgg`) com ordenação na memória (`quicksort`).
 - **Consulta 3:** Custo total estimado de 0.07. Tempo de execução de 0.138 ms. Estruturas utilizadas: `HashAggregate` combinado com `Nested Loop` para varredura física sequencial das tabelas de produção.
 
-## 4. Diagnóstico e Análise de Planos de Execução
+## 4. Parte 02: Diagnóstico e Análise de Planos de Execução
 Com base nas coletas do `EXPLAIN ANALYZE`, foi idêntificado três grandes ofensores de desempenho que explicam o custo elevado das consultas atuais:
 
 1. **Gargalo de Filtragem (Seq Scan):** 
@@ -36,7 +37,7 @@ Com base nas coletas do `EXPLAIN ANALYZE`, foi idêntificado três grandes ofens
    - **Diagnóstico:** As operações de agregação (`SUM`, `GROUP BY`) e as funções de janela (`RANK() OVER`) foram resolvidas em memória (via `quicksort` e agrupamentos de hash). Em cenários de crescimento de volume de dados, isso causará transbordamento de memória para o disco (*temp files*).
    - **Solução Proposta:** Uso estratégico de índices, visto que estruturas em árvore B+ armazenam os dados de forma pré-ordenada, isentando a CPU de alocar espaço de trabalho (`work_mem`) para executar ordenações no momento da consulta.
 
-## 5. Aplicação das Ações de Tunning
+## 5. Parte 03: Aplicação das Ações de Tunning
 Foram criados 6 índices B-Tree direcionados para resolver os gargalos identificados na análise dos planos de execução:
 
 1. **Índices Parciais (`WHERE status = 5` e `WHERE scrappedqty > 0`):**
@@ -47,7 +48,7 @@ Foram criados 6 índices B-Tree direcionados para resolver os gargalos identific
    - **Justificativa:** A ausência de índices nas FKs impedia o otimizador de utilizar junções eficientes (*Hash Join* e *Index Scan*).
    - **Efeito Colateral Previsto:** Ligeiro aumento no tempo de escrita (`INSERT`/`DELETE`) nessas tabelas transacionais, visto que o SGBD precisa atualizar a estrutura da árvore B+ a cada nova transação, além do custo de armazenamento de blocos adicionais de índice.
 
-## 6. Comprovação dos Resultados e Limites da Otimização
+## 6. Parte 04: Comprovação dos Resultados e Limites da Otimização
 Após a aplicação das ações de tunning (criação de índices B-Tree compostos, parciais e de chaves estrangeiras), procedeu-se com a re-execução da carga de trabalho via `EXPLAIN ANALYZE` para medição comparativa.
 
 **Resultados Obtidos (Pós-Tunning):**
